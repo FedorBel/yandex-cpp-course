@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1022
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Уравнения", "Уравнения\Уравнения.vcxproj", "{73AC0004-7858-4ADD-BCF7-C141C702FA25}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{73AC0004-7858-4ADD-BCF7-C141C702FA25}.Debug|x64.ActiveCfg = Debug|x64
+		{73AC0004-7858-4ADD-BCF7-C141C702FA25}.Debug|x64.Build.0 = Debug|x64
+		{73AC0004-7858-4ADD-BCF7-C141C702FA25}.Debug|x86.ActiveCfg = Debug|Win32
+		{73AC0004-7858-4ADD-BCF7-C141C702FA25}.Debug|x86.Build.0 = Debug|Win32
+		{73AC0004-7858-4ADD-BCF7-C141C702FA25}.Release|x64.ActiveCfg = Release|x64
+		{73AC0004-7858-4ADD-BCF7-C141C702FA25}.Release|x64.Build.0 = Release|x64
+		{73AC0004-7858-4ADD-BCF7-C141C702FA25}.Release|x86.ActiveCfg = Release|Win32
+		{73AC0004-7858-4ADD-BCF7-C141C702FA25}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6E1DC628-8951-41DD-8ADC-8BC28CC2FB72}
+	EndGlobalSection
+EndGlobal
