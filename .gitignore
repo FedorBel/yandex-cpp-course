@@ -1,0 +1,9 @@
+# VS Studio
+
+Debug/
+Release/
+.vs/
+
+# VS Code
+
+.vs_code/
