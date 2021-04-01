@@ -9,3 +9,4 @@ Release/
 .vs_code/
 .vscode/
 log/
+build/
