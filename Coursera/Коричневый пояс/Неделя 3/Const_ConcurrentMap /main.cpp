@@ -2,12 +2,14 @@
 #include "profile.h"
 
 #include <future>
+#include <thread>
 #include <mutex>
 #include <unordered_map>
 #include <vector>
 #include <utility>
 #include <algorithm>
 #include <random>
+
 using namespace std;
 
 auto Lock(mutex &m)
@@ -21,24 +23,22 @@ class ConcurrentMap
 public:
     using MapType = unordered_map<K, V, Hash>;
 
-    struct WriteAccess
+    struct WriteAccess : lock_guard<mutex>
     {
         V &ref_to_value;
-        lock_guard<mutex> guard;
 
         WriteAccess(const K &key, pair<mutex, MapType> &bucket_content)
-            : guard(bucket_content.first), ref_to_value(bucket_content.second[key])
+            : lock_guard(bucket_content.first), ref_to_value(bucket_content.second[key])
         {
         }
     };
 
-    struct ReadAccess
+    struct ReadAccess : lock_guard<mutex>
     {
         const V &ref_to_value;
-        lock_guard<mutex> guard;
 
         ReadAccess(const K &key, pair<mutex, MapType> &bucket_content)
-            : guard(bucket_content.first), ref_to_value(bucket_content.second[key])
+            : lock_guard(bucket_content.first), ref_to_value(bucket_content.second[key])
         {
         }
     };
