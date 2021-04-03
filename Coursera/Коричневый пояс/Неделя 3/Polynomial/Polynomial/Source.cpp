@@ -55,15 +55,19 @@ private:
 			return std::as_const(poly_)[degree_];
 		}
 
-		Polynomial& operator =(const T& r)
+		IndexProxy& operator =(const T& value)
 		{
-			if (degree_ >= poly_.coeffs_.size())
-			{
-				poly_.coeffs_.resize(degree_ + 1);
+			auto& coeffs = poly_.coeffs_;
+
+			if (degree_ >= coeffs.size()) {
+				if (value == 0) {
+					return *this;
+				}
+				coeffs.resize(degree_ + 1);
 			}
-			poly_.coeffs_[degree_] = r;
+			coeffs[degree_] = value;
 			poly_.Shrink();
-			return poly_;
+			return *this;
 		}
 
 	private:
