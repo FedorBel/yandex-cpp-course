@@ -96,7 +96,6 @@ void TestSimple() {
       "# ... #\n"
       "#######\n";
 
-  cout <<  output.str();
   ASSERT_EQUAL(answer, output.str());
 }
 

@@ -61,7 +61,7 @@ public:
 		auto image_width = static_cast<int>(image.empty() ? 0 : image[0].size());
 		auto image_height = static_cast<int>(image.size());
 
-		if (global_x < 0 || global_x > image_height ||
+		if (global_x < 0 || global_x > image_width ||
 			global_y < 0 || global_y > image_height)
 		{
 			return;
@@ -82,20 +82,24 @@ public:
 					if (IsPointInEllipse({ x, y }, this->size_))
 					{
 						image[y + global_y][x + global_x] = texture[y][x];
-					}
+					}					
 				}
 			}
 		}
 
 		const char default_texture = '.';
-		for (int y = texture_height; y < this->size_.height && (y + global_y) < image_height; y++)
+		for (int y = 0; y < this->size_.height && (y + global_y) < image_height; y++)
 		{
-			for (int x = texture_width; x, x < this->size_.width && (x + global_x) < image_width; x++)
+			for (int x = 0; x < this->size_.width && (x + global_x) < image_width; x++)
 			{
+				if (y < texture_height && x < texture_width)
+				{
+					continue;
+				}
 				if (IsPointInEllipse({ x, y }, this->size_))
 				{
 					image[y + global_y][x + global_x] = default_texture;
-				}
+				}				
 			}
 		}
 	}
@@ -116,13 +120,10 @@ public:
 	// текстуру. Фигура и её копия совместно владеют этой текстурой.
 	unique_ptr<IShape> Clone() const
 	{
-		auto shared_counter_before = this->texture_ptr_.use_count();
 		auto copy_ptr = make_unique<Rectangle>();
 		copy_ptr->SetPosition(this->position_);
 		copy_ptr->SetSize(this->size_);
 		copy_ptr->SetTexture(this->texture_ptr_);
-		auto shared_counter_after = this->texture_ptr_.use_count();
-
 		return copy_ptr;
 	}
 
@@ -148,10 +149,7 @@ public:
 
 	void SetTexture(shared_ptr<ITexture> texture_ptr)
 	{
-		//auto shared2 = this->texture_ptr_;
-		//auto shared_counter_before = this->texture_ptr_.use_count();
 		this->texture_ptr_ = texture_ptr;
-		//auto shared_counter_after = this->texture_ptr_.use_count();
 	}
 
 	ITexture* GetTexture() const
@@ -168,7 +166,7 @@ public:
 		auto image_width = static_cast<int>(image.empty() ? 0 : image[0].size());
 		auto image_height = static_cast<int>(image.size());
 
-		if (global_x < 0 || global_x > image_height ||
+		if (global_x < 0 || global_x > image_width ||
 			global_y < 0 || global_y > image_height)
 		{
 			return;
