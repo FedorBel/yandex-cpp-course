@@ -2,6 +2,7 @@
 #include <list>
 #include <unordered_map>
 #include <atomic>
+#include <mutex>
 
 using namespace std;
 
@@ -20,22 +21,21 @@ public:
 
 	BookPtr GetBook(const string& book_name) override
 	{
-		auto name_ptr = make_shared<const string>(book_name);
-		auto it = books_map_.find(name_ptr);
+		lock_guard g(m);
+		auto it = books_map_.find(book_name);
 		BookPtr book_ptr = nullptr;
 		if (it != books_map_.end())
 		{
-			book_ptr = it->second->second.GetBook();
-			books_list_.erase(it->second);
-			books_map_.erase(it);
+			book_ptr = it->second->second->GetBook();
+			books_list_.splice(books_list_.begin(), books_list_,it->second);
 		}
 		else
 		{
 			book_ptr = books_unpacker_->UnpackBook(book_name);
+			books_list_.push_front(make_pair(book_name, make_unique<BookInfo>(book_ptr, this->memory_used_by_books_)));
+			books_map_[book_name] = books_list_.begin();
 		}
-
-		books_list_.push_front(make_pair(name_ptr, BookInfo(book_ptr, this->memory_used_by_books_)));
-		books_map_[name_ptr] = books_list_.begin();
+	
 		Shrink();
 		return book_ptr;
 	}
@@ -74,18 +74,16 @@ private:
 
 private:
 	// containers for LRU
-	list<pair<NamePtr, BookInfo>> books_list_;
-	unordered_map<NamePtr, decltype(books_list_.begin())> books_map_;
+	list<pair<string, unique_ptr<BookInfo>>> books_list_;
+	unordered_map<string, decltype(books_list_.begin())> books_map_;
 
 private:
+	mutex m;
+
 	void Shrink()
 	{
 		while (memory_used_by_books_ > max_memory_)
 		{
-			if (books_list_.end() == books_list_.begin())
-			{
-				string tmp;
-			}
 			auto it = prev(books_list_.end());
 			books_map_.erase(it->first);
 			books_list_.erase(it);
