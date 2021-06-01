@@ -39,7 +39,13 @@ public:
     tuple<TasksInfo, TasksInfo> PerformPersonTasks(
         const string &person, int task_count)
     {
-        TasksInfo &tasks_info = team_info_.at(person);
+        auto it = team_info_.find(person);
+        if (it == team_info_.end())
+        {
+            return {};
+        }
+
+        TasksInfo &tasks_info = it->second;
 
         // create updated and old tasks
         TasksInfo updated_tasks;
@@ -59,7 +65,6 @@ public:
                 updated_tasks[next_status] = tasks_to_move;
 
                 int old_tasks_count = tasks.second - tasks_to_move;
-                old_tasks_count = (old_tasks_count < 0) ? 0 : old_tasks_count;
                 if (old_tasks_count)
                 {
                     old_tasks[tasks.first] = old_tasks_count;
