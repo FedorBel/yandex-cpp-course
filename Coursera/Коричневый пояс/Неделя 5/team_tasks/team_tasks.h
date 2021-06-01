@@ -71,6 +71,7 @@ public:
             }
         }
 
+        int old_done_tasks = tasks_info[TaskStatus::DONE];
         tasks_info.clear();
         for (const auto &tasks : updated_tasks)
         {
@@ -79,6 +80,11 @@ public:
         for (const auto &tasks : old_tasks)
         {
             tasks_info[tasks.first] += tasks.second;
+        }
+
+        if (old_done_tasks)
+        {
+            tasks_info[TaskStatus::DONE] += old_done_tasks;
         }
 
         return {updated_tasks, old_tasks};
