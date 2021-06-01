@@ -50,35 +50,35 @@ public:
             {
                 break;
             }
-            if (!task_count)
+
+            if (task_count)
             {
-                break;
+                int tasks_to_move = (task_count > tasks.second) ? tasks.second : task_count;
+                task_count -= tasks_to_move;
+                TaskStatus next_status = GetNextStatus(tasks.first);
+                updated_tasks[next_status] = tasks_to_move;
+
+                int old_tasks_count = tasks.second - tasks_to_move;
+                old_tasks_count = (old_tasks_count < 0) ? 0 : old_tasks_count;
+                if (old_tasks_count)
+                {
+                    old_tasks[tasks.first] = old_tasks_count;
+                }
             }
-
-            int tasks_to_move = (task_count > tasks.second) ? tasks.second : task_count;
-            TaskStatus next_status = GetNextStatus(tasks.first);
-            updated_tasks[next_status] = tasks_to_move;
-
-            int old_tasks_count = tasks.second - tasks_to_move;
-            old_tasks_count = (old_tasks_count < 0) ? 0 : old_tasks_count;
-            if (old_tasks_count)
+            else
             {
-                old_tasks[tasks.first] = old_tasks_count;
+                old_tasks[tasks.first] = tasks.second;
             }
         }
 
-        // update tasks info with new data
-        size_t task_status_size = static_cast<size_t>(TaskStatus::DONE) + 1;
-        for (size_t i = 0; i < task_status_size; i++)
+        tasks_info.clear();
+        for (const auto &tasks : updated_tasks)
         {
-            TaskStatus current_status = static_cast<TaskStatus>(i);
-            try
-            {
-                tasks_info[current_status] = updated_tasks.at(current_status) + old_tasks.at(current_status);
-            }
-            catch (const std::exception &e)
-            {
-            }
+            tasks_info[tasks.first] = tasks.second;
+        }
+        for (const auto &tasks : old_tasks)
+        {
+            tasks_info[tasks.first] += tasks.second;
         }
 
         return {updated_tasks, old_tasks};
