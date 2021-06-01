@@ -96,10 +96,10 @@ private:
             return TaskStatus::IN_PROGRESS;
 
         case TaskStatus::IN_PROGRESS:
-            return TaskStatus::IN_PROGRESS;
+            return TaskStatus::TESTING;
 
         case TaskStatus::TESTING:
-            return TaskStatus::IN_PROGRESS;
+            return TaskStatus::DONE;
 
         default:
             return {};
