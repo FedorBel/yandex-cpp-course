@@ -38,6 +38,7 @@ void TestResult()
     }
     else
     {
+        cout << "SUCCESS!\n\n";
         cout << "Result:\n"
              << ss.str() << endl;
     }
@@ -64,6 +65,8 @@ int main()
     PrintTasksInfo(updated_tasks);
     ss << "Untouched Ivan's tasks: ";
     PrintTasksInfo(untouched_tasks);
+    // ss << "Ivan's tasks: ";
+    // PrintTasksInfo(tasks.GetPersonTasksInfo("Ivan"));
 
     tie(updated_tasks, untouched_tasks) =
         tasks.PerformPersonTasks("Ivan", 2);
@@ -76,17 +79,3 @@ int main()
 
     return 0;
 }
-
-// int main(int, char **)
-// {
-//     using namespace std;
-
-//     if (0)
-//     {
-//         std::ss << "-1 == true" << std::endl;
-//     }
-//     else
-//     {
-//         std::ss << "-1 == false" << std::endl;
-//     }
-// }
