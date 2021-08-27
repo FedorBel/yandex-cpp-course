@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <set>
 #include <list>
+#include <numeric>
 
 using namespace std;
 
@@ -54,24 +56,22 @@ public:
     {
         current_time_ = book_event.time;
         const auto &hotel_name = book_event.hotel_name;
+        book_events_.push_front(book_event);
 
-        ClientStamped client;
-        client.time = book_event.time;
-        client.client_id = book_event.client_id;
-        AddClient(hotel_name, client);
-
-        RoomsStamped rooms;
-        rooms.time = book_event.time;
-        rooms.room_count = book_event.room_count;
-        AddRooms(hotel_name, rooms);
+        clients_map_[hotel_name][book_event.client_id] += book_event.room_count;
+        rooms_map_[hotel_name] += book_event.room_count;
+        Clear();
     }
 
-    void Clients(const Events::Clients &client_event)
+    size_t Clients(const Events::Clients &client_event)
     {
+        auto &hotel_name = client_event.hotel_name;
+        return clients_map_[hotel_name].size();
     }
 
-    void Rooms(const Events::Rooms &rooms_event)
+    size_t Rooms(const Events::Rooms &rooms_event)
     {
+        return rooms_map_[rooms_event.hotel_name];
     }
 
 private:
@@ -84,39 +84,32 @@ private:
     struct RoomsStamped
     {
         size_t room_count;
+        int64_t client_id;
         int64_t time;
     };
 
     int64_t current_time_;
-    unordered_map<string, list<ClientStamped>> clients_map_;
-    unordered_map<string, list<RoomsStamped>> rooms_map_;
+    list<Events::Book> book_events_;
+    unordered_map<string, unordered_map<int64_t, int>> clients_map_;
+    unordered_map<string, size_t> rooms_map_;
 
 private:
-    void AddClient(const string &hotel_name, ClientStamped &client)
+    void Clear()
     {
-        auto &clients = clients_map_[hotel_name];
-        clients.push_front(client);
-        while (!clients.empty())
+        while (!book_events_.empty())
         {
-            if (clients.back().time <= (current_time_ - 86400))
+            if (book_events_.back().time <= (current_time_ - 86400))
             {
-                clients.pop_back();
-            }
-            else
-            {
-                break;
-            }
-        }
-    }
-    void AddRooms(const string &hotel_name, RoomsStamped &rooms)
-    {
-        auto &rooms_count = rooms_map_[hotel_name];
-        rooms_count.push_front(rooms);
-        while (!rooms_count.empty())
-        {
-            if (rooms_count.back().time <= (current_time_ - 86400))
-            {
-                rooms_count.pop_back();
+                auto &book_event = book_events_.back();
+
+                auto &client_room_count = clients_map_[book_event.hotel_name][book_event.client_id];
+                client_room_count -= book_event.room_count;
+                if (client_room_count == 0)
+                {
+                    clients_map_[book_event.hotel_name].erase(book_event.client_id);
+                }
+                rooms_map_[book_event.hotel_name] -= book_event.room_count;
+                book_events_.pop_back();
             }
             else
             {
@@ -139,16 +132,19 @@ int main()
         {
             Events::Book book_event;
             cin >> book_event;
+            manager.Book(book_event);
         }
         else if (event == "CLIENTS")
         {
             Events::Clients clients_event;
             cin >> clients_event;
+            cout << manager.Clients(clients_event) << "\n";
         }
         else if (event == "ROOMS")
         {
             Events::Rooms rooms_event;
             cin >> rooms_event;
+            cout << manager.Rooms(rooms_event) << "\n";
         }
     }
 
